@@ -1,6 +1,7 @@
 package com.example.espenaj.ifi_rating;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.example.espenaj.ifi_rating.model.ChessMatch;
 import com.example.espenaj.ifi_rating.model.Match;
 import com.example.espenaj.ifi_rating.util.JSONParser;
 
@@ -30,11 +32,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements MatchFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -51,11 +51,14 @@ public class MainActivity extends AppCompatActivity implements MatchFragment.OnL
      */
     private ViewPager mViewPager;
 
-    String url = "http://api.chess-rating.vegarm.svc.tutum.io:3000/chess/";
+    String url = "http://api.chess-rating.vegarm.svc.tutum.io:3000/squash/";
     public ArrayList<Match> matches;
 
-    public static final List<Match> MATCHES = new ArrayList<>();
-    public static final Map<String, Match> MATCH_MAP = new HashMap<>();
+    public static List<ChessMatch> MATCHES = new ArrayList<>();
+
+    private FragmentComm fragmentComm;
+
+    String LogTag = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +89,29 @@ public class MainActivity extends AppCompatActivity implements MatchFragment.OnL
 
         matches = new ArrayList<>();
 
+        Context context = this;
+
+        //dummyData();
         new JSONParse().execute();
 
+    }
+
+    public void setFragmentComm(FragmentComm fc) {
+        this.fragmentComm = fc;
+    }
+
+    @Override
+    public void onAttachFragment(android.app.Fragment fragment) {
+        super.onAttachFragment(fragment);
+    }
+
+
+    public void dummyData() {
+        for(int i = 0; i < 10; i ++) {
+            MATCHES.add(new ChessMatch(""+i, "Vegar", "Jones", "Black wins"));
+        }
+
+        Log.d("MAIN", "check first : " + MATCHES.get(0).getId());
     }
 
     @Override
@@ -112,15 +136,10 @@ public class MainActivity extends AppCompatActivity implements MatchFragment.OnL
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onListFragmentInteraction(Match item) {
-
-    }
-
-
     public void getMatches() {
 
     }
+
     private class JSONParse extends AsyncTask<String, String, JSONArray> {
         private ProgressDialog pDialog;
 
@@ -155,20 +174,24 @@ public class MainActivity extends AppCompatActivity implements MatchFragment.OnL
 
             JSONObject jsonObject;
 
-            if(jsonArray == null) return;
+            if(jsonArray == null) {
+
+
+                return;
+            }
             for(int i = 0; i < jsonArray.length(); i++) {
                 try {
                     jsonObject = jsonArray.getJSONObject(i);
-                    Match match = new Match(jsonObject.getString("result"), jsonObject.getString("white"), jsonObject.getString("black"), jsonObject.getString("_id"));
+                    ChessMatch match = new ChessMatch(jsonObject.getString("_id"), jsonObject.getString("white"), jsonObject.getString("black"), jsonObject.getString("result"));
                     Log.d("Main", "Created : " + match.getId());
                     MATCHES.add(match);
-                    MATCH_MAP.put(match.getId(), match);
                     Log.d("Main", "Added : "  + MATCHES.get(i).getId());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
             Log.d("MAIN", "check first : " + MATCHES.get(0).getId());
+            fragmentComm.onMatchDataDownloaded(MATCHES);
         }
     }
 
@@ -251,4 +274,10 @@ public class MainActivity extends AppCompatActivity implements MatchFragment.OnL
             return null;
         }
     }
+
+    public interface FragmentComm {
+        void onMatchDataDownloaded(List<ChessMatch> matches);
+    }
+
+
 }

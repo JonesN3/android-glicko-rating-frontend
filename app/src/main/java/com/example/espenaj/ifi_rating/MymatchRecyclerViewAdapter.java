@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.espenaj.ifi_rating.MatchFragment.OnListFragmentInteractionListener;
-import com.example.espenaj.ifi_rating.dummy.DummyContent.DummyItem;
 import com.example.espenaj.ifi_rating.model.Match;
 
 import java.util.List;
@@ -38,8 +37,8 @@ public class MymatchRecyclerViewAdapter extends RecyclerView.Adapter<MymatchRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getId());
-        holder.mContentView.setText(mValues.get(position).getPlayerOne());
-        holder.mContentView2.setText(mValues.get(position).getPlayerTwo());
+        holder.mContentView.setText(mValues.get(position).getPlayerOneString());
+        holder.mContentView2.setText(mValues.get(position).getPlayerTwoString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

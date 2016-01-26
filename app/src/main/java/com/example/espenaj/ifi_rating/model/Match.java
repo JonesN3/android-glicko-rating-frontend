@@ -4,40 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by espenaj on 1/14/16.
+ * Created by espenaj on 1/26/16.
  */
 public class Match implements Parcelable {
-    int id_;
     String id;
-    int playerOneScore;
-    int playerTwoScore;
-    String playerOne;
-    String playerTwo;
-    String result;
+    String playerOneString;
+    String playerTwoString;
 
-    public Match(String result, String playerOne, String playerTwo, String id) {
-        this.result = result;
-        this.playerOne = playerOne;
-        this.playerTwo = playerTwo;
+    Player playerOne;
+    Player playerTwo;
+
+    public Match(String id, String playerOne, String playerTwo) {
         this.id = id;
-    }
-
-    public Match(int playerOneScore, String playerOne, int playerTwoScore, String playerTwo, String result) {
-        this.playerOneScore = playerOneScore;
-        this.playerOne = playerOne;
-        this.playerTwoScore = playerTwoScore;
-        this.playerTwo = playerTwo;
-        this.result = result;
+        playerOneString = playerOne;
+        playerTwoString = playerOne;
     }
 
     protected Match(Parcel in) {
-        id_ = in.readInt();
         id = in.readString();
-        playerOneScore = in.readInt();
-        playerTwoScore = in.readInt();
-        playerOne = in.readString();
-        playerTwo = in.readString();
-        result = in.readString();
+        playerOneString = in.readString();
+        playerTwoString = in.readString();
     }
 
     public static final Creator<Match> CREATOR = new Creator<Match>() {
@@ -52,16 +38,12 @@ public class Match implements Parcelable {
         }
     };
 
-    public String getPlayerOne() {
-        return playerOne;
+    public String getPlayerOneString() {
+        return playerOneString;
     }
 
-    public String getPlayerTwo() {
-        return playerTwo;
-    }
-
-    public String getResult() {
-        return result;
+    public String getPlayerTwoString() {
+        return playerTwoString;
     }
 
     public String getId() {
@@ -75,12 +57,8 @@ public class Match implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id_);
         dest.writeString(id);
-        dest.writeInt(playerOneScore);
-        dest.writeInt(playerTwoScore);
-        dest.writeString(playerOne);
-        dest.writeString(playerTwo);
-        dest.writeString(result);
+        dest.writeString(playerOneString);
+        dest.writeString(playerTwoString);
     }
 }

@@ -3,7 +3,6 @@ package com.example.espenaj.ifi_rating;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,11 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.espenaj.ifi_rating.dummy.DummyContent;
-import com.example.espenaj.ifi_rating.dummy.DummyContent.DummyItem;
+import com.example.espenaj.ifi_rating.adapter.ChessMatchAdapter;
+import com.example.espenaj.ifi_rating.model.ChessMatch;
 import com.example.espenaj.ifi_rating.model.Match;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -23,13 +23,15 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class MatchFragment extends Fragment {
+public class MatchFragment extends Fragment implements MainActivity.FragmentComm {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    String LogTag = "MatochFragment";
+    MainActivity.FragmentComm fragmentComm;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -82,21 +84,26 @@ public class MatchFragment extends Fragment {
         Bundle args = getArguments();
         ArrayList<Match> m = args.getParcelableArrayList("matches");
 
-        Log.d("Match", " " + DummyContent.ITEMS_MATCH.size());
         Log.d("Match", " " + MainActivity.MATCHES.size());
         Log.d("Match", " " + m.size());
+
+        if(MainActivity.MATCHES.size() == 0) {
+            Log.d(LogTag, "Matches size is 0!");
+            return view;
+        }
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                //recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(llm);
+
+            if(MainActivity.MATCHES.get(0) instanceof ChessMatch) {
+                ChessMatchAdapter adapter = new ChessMatchAdapter(MainActivity.MATCHES);
+                recyclerView.setAdapter(adapter);
             }
-            recyclerView.setAdapter(new MymatchRecyclerViewAdapter(MainActivity.MATCHES, mListener));
         }
         return view;
     }
@@ -106,12 +113,24 @@ public class MatchFragment extends Fragment {
     public void onAttach(Context context) {
         Log.d("Match", "On attach");
         super.onAttach(context);
+
+        fragmentComm = new MainActivity.FragmentComm() {
+            @Override
+            public void onMatchDataDownloaded(List<ChessMatch> matches) {
+                onMatchDataDownloaded(matches);
+            }
+        };
+
+
+        Log.d(LogTag, "Interface created!!!");
+
+        /*
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
-        }
+        }*/
     }
 
 
@@ -119,6 +138,25 @@ public class MatchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onMatchDataDownloaded(List<ChessMatch> matches) {
+        Log.d(LogTag, "onMatchDownloaded");
+
+        // Set the adapter
+        if (getView() instanceof RecyclerView) {
+            Context context = getView().getContext();
+            RecyclerView recyclerView = (RecyclerView) getView();
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(llm);
+
+            if(MainActivity.MATCHES.get(0) instanceof ChessMatch) {
+                ChessMatchAdapter adapter = new ChessMatchAdapter(MainActivity.MATCHES);
+                recyclerView.setAdapter(adapter);
+            }
+        }
     }
 
     /**
@@ -135,4 +173,5 @@ public class MatchFragment extends Fragment {
         // TODO: Update argument type and name
         void onListFragmentInteraction(Match item);
     }
+
 }
