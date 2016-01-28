@@ -40,7 +40,7 @@ public class ChessMatchAdapter extends RecyclerView.Adapter<ChessMatchAdapter.Ma
     public int getItemCount() {
         if(matches == null) {
             Log.d(LogTag, "matches is null!");
-            return -1;
+            return 0;
         }
         return matches.size();
     }

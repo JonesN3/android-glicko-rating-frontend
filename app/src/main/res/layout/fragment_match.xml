@@ -16,6 +16,16 @@
         android:layout_alignParentStart="true" />
 
     <TextView
+        android:text="Black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="White"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:id="@+id/content2"
         android:text="CONTENT2"
         android:layout_width="wrap_content"

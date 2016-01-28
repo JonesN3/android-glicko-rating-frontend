@@ -81,18 +81,44 @@ public class MatchFragment extends Fragment implements MainActivity.FragmentComm
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_match_list, container, false);
 
+        Log.d(LogTag, "OnoCreateView");
+        setRetainInstance(true);
+
         Bundle args = getArguments();
-        ArrayList<Match> m = args.getParcelableArrayList("matches");
+      //  ArrayList<Match> m = args.getParcelableArrayList("matches");
 
         Log.d("Match", " " + MainActivity.MATCHES.size());
-        Log.d("Match", " " + m.size());
+       // Log.d("Match", " " + m.size());
+
 
         if(MainActivity.MATCHES.size() == 0) {
             Log.d(LogTag, "Matches size is 0!");
-            return view;
         }
 
         // Set the adapter
+        if (view instanceof RecyclerView) {
+            Log.d(LogTag, "View is RecyclerView");
+            Context context = view.getContext();
+            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(llm);
+
+
+                Log.d(LogTag, "Matches is type ChessMatch");
+                ChessMatchAdapter adapter = new ChessMatchAdapter(MainActivity.MATCHES);
+                recyclerView.setAdapter(adapter);
+                Log.d(LogTag, "" + adapter);
+        } else {
+            Log.d(LogTag, "View is NOT RecyclerView");
+        }
+        return view;
+    }
+
+    public void updateMatchList() {
+        // Set the adapter
+        Log.d(LogTag, "UpdateMatchList");
+        View view = getView();
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -105,9 +131,13 @@ public class MatchFragment extends Fragment implements MainActivity.FragmentComm
                 recyclerView.setAdapter(adapter);
             }
         }
-        return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(LogTag, "onStart");
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -124,6 +154,21 @@ public class MatchFragment extends Fragment implements MainActivity.FragmentComm
 
         Log.d(LogTag, "Interface created!!!");
 
+
+        // Set the adapter
+        View view = getView();
+        if (getView() instanceof RecyclerView) {
+            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(llm);
+
+            if (MainActivity.MATCHES.get(0) instanceof ChessMatch) {
+                ChessMatchAdapter adapter = new ChessMatchAdapter(MainActivity.MATCHES);
+                recyclerView.setAdapter(adapter);
+            }
+        }
+
         /*
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
@@ -132,7 +177,6 @@ public class MatchFragment extends Fragment implements MainActivity.FragmentComm
                     + " must implement OnListFragmentInteractionListener");
         }*/
     }
-
 
     @Override
     public void onDetach() {

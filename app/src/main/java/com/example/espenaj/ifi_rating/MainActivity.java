@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         matches = new ArrayList<>();
+        MATCHES = new ArrayList<>();
 
         Context context = this;
 
@@ -191,7 +193,31 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             Log.d("MAIN", "check first : " + MATCHES.get(0).getId());
-            fragmentComm.onMatchDataDownloaded(MATCHES);
+
+        MatchFragment matchFragment;
+
+            matchFragment = (MatchFragment)
+                getSupportFragmentManager().findFragmentById(R.id.list);
+
+
+            Log.d(LogTag, "" + matchFragment);
+
+            MatchFragment.newInstance((ArrayList) MATCHES);
+
+            if(matchFragment != null) {
+                matchFragment.updateMatchList();
+            } else {
+                /*
+                matchFragment = new MatchFragment();
+                Bundle args  = new Bundle();
+
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.list, matchFragment);
+                transaction.addToBackStack(null);
+
+                transaction.commit();
+                */
+            }
         }
     }
 
