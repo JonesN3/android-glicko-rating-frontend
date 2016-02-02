@@ -17,7 +17,7 @@ public class Match implements Parcelable {
     public Match(String id, String playerOne, String playerTwo) {
         this.id = id;
         playerOneString = playerOne;
-        playerTwoString = playerOne;
+        playerTwoString = playerTwo;
     }
 
     protected Match(Parcel in) {

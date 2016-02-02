@@ -13,4 +13,16 @@ public class Player {
         this.id = id;
         this.elo = elo;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getElo() {
+        return elo;
+    }
 }

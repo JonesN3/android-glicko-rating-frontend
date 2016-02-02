@@ -2,11 +2,11 @@ package com.example.espenaj.ifi_rating;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.example.espenaj.ifi_rating.model.ChessMatch;
 import com.example.espenaj.ifi_rating.model.Match;
+import com.example.espenaj.ifi_rating.model.Player;
 import com.example.espenaj.ifi_rating.util.JSONParser;
 
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PlayersFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Match> matches;
 
     public static List<ChessMatch> MATCHES = new ArrayList<>();
+    public static List<Player> PLAYERS = new ArrayList<>();
 
     private FragmentComm fragmentComm;
 
@@ -142,7 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class JSONParse extends AsyncTask<String, String, JSONArray> {
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    private class JSONParse extends AsyncTask<String, String, ArrayList<JSONArray>> {
         private ProgressDialog pDialog;
 
         @Override
@@ -157,30 +164,43 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected JSONArray doInBackground(String... args) {
+        protected ArrayList<JSONArray> doInBackground(String... args) {
             JSONParser jParser = new JSONParser();
 
             // Getting JSON from URL
-            JSONArray json = jParser.getJson(url + "games");
-            return json;
+
+            ArrayList<JSONArray> jsonArrays = new ArrayList<>(2);
+            JSONArray json_games = jParser.getJson(url + "games");
+            JSONArray json_players = jParser.getJson(url + "players");
+
+            jsonArrays.add(json_games);
+            jsonArrays.add(json_players);
+
+            return jsonArrays;
         }
 
         @Override
-        protected void onPostExecute(JSONArray jsonArray) {
+        protected void onPostExecute(ArrayList<JSONArray> jsonArrays) {
             pDialog.dismiss();
 
+            JSONArray jsonArray = jsonArrays.get(0);
+            JSONArray players = jsonArrays.get(1);
+
             System.out.println(jsonArray);
+            System.out.println(players);
+
             // Getting JSON Array
             // match = json.getJSONArray();
             //JSONObject c = user.getJSONObject(0);
 
             JSONObject jsonObject;
+            JSONObject playerJson;
 
             if(jsonArray == null) {
-
-
                 return;
             }
+
+            /*create match objects */
             for(int i = 0; i < jsonArray.length(); i++) {
                 try {
                     jsonObject = jsonArray.getJSONObject(i);
@@ -192,16 +212,32 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            Log.d("MAIN", "check first : " + MATCHES.get(0).getId());
 
-        MatchFragment matchFragment;
+            /* Create player objects */
+            for(int i = 0; i < players.length(); i++) {
+                try {
+                    playerJson = players.getJSONObject(i);
+                    String rating = playerJson.getString("rating");
+                    Log.d(LogTag, rating);
+                    Player player = new Player(playerJson.getString("name"), playerJson.getString("_id"),(int) Double.parseDouble(rating));
+                    PLAYERS.add(player);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            Log.d("MAIN", "check first : " + MATCHES.get(0).getId());
+            Log.d("MAIN", "check first Player: " + PLAYERS.get(0).getId());
+
+            MatchFragment matchFragment;
 
             matchFragment = (MatchFragment)
-                getSupportFragmentManager().findFragmentById(R.id.list);
+                    getSupportFragmentManager().findFragmentById(R.id.list);
 
+            Log.d(LogTag, "" + MATCHES);
 
-            Log.d(LogTag, "" + matchFragment);
-
+            Log.d(LogTag, "New MatchFragment from JSONParser");
             MatchFragment.newInstance((ArrayList) MATCHES);
 
             if(matchFragment != null) {
@@ -273,7 +309,11 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
 
             switch (position) {
+                case 0:
+                    Log.d(LogTag, "new PlayersFragment from slectionAdapter");
+                    return PlayersFragment.newInstance();
                 case 1:
+                    Log.d(LogTag, "new MathcFragment from slectionAdapter");
                     return MatchFragment.newInstance((ArrayList) MATCHES);
                 default:
                     return PlaceholderFragment.newInstance(position + 1);

@@ -3,6 +3,7 @@ package com.example.espenaj.ifi_rating;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -101,9 +102,9 @@ public class MatchFragment extends Fragment implements MainActivity.FragmentComm
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setHasFixedSize(true);
+
             LinearLayoutManager llm = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(llm);
-
 
                 Log.d(LogTag, "Matches is type ChessMatch");
                 ChessMatchAdapter adapter = new ChessMatchAdapter(MainActivity.MATCHES);
