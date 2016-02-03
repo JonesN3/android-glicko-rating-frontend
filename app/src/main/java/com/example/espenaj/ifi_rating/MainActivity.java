@@ -2,11 +2,13 @@ package com.example.espenaj.ifi_rating;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -85,8 +88,32 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Empty", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        setFabForPlayersFragment();
+                        break;
+                    case 1:
+                        setFabForMatchFragment();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
@@ -158,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Getting Data ...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
+            pDialog.setCancelable(false);
             pDialog.show();
 
         }
@@ -181,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
 
         @Override
         protected void onPostExecute(ArrayList<JSONArray> jsonArrays) {
-            pDialog.dismiss();
 
             JSONArray jsonArray = jsonArrays.get(0);
             JSONArray players = jsonArrays.get(1);
@@ -256,6 +282,8 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
                 transaction.commit();
                 */
             }
+
+            pDialog.dismiss();
         }
     }
 
@@ -313,9 +341,11 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
             switch (position) {
                 case 0:
                     Log.d(LogTag, "new PlayersFragment from slectionAdapter");
+                    setFabForPlayersFragment();
                     return PlayersFragment.newInstance();
                 case 1:
                     Log.d(LogTag, "new MathcFragment from slectionAdapter");
+                    setFabForMatchFragment();
                     return MatchFragment.newInstance((ArrayList) MATCHES);
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
@@ -341,6 +371,45 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
             }
             return null;
         }
+    }
+
+    private void setFabForMatchFragment() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Matches", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    private void setFabForPlayersFragment() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(MainActivity.this, R.style.AppCompatAlertDialogStyle);
+                builder.setTitle("Create player");
+                builder.setView(R.layout.dialog_create_player)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Snackbar.make(view, "Created player \"TODO\" ", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        });
+                builder.show();
+
+            }
+        });
     }
 
     public interface FragmentComm {
