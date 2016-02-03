@@ -235,6 +235,8 @@ public class MainActivity extends AppCompatActivity implements PlayersFragment.O
             matchFragment = (MatchFragment)
                     getSupportFragmentManager().findFragmentById(R.id.list);
 
+            PlayersFragment.newInstance();
+
             Log.d(LogTag, "" + MATCHES);
 
             Log.d(LogTag, "New MatchFragment from JSONParser");

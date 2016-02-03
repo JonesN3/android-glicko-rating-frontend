@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class GeneralMatchAdapter extends RecyclerView.Adapter<GeneralMatchAdapter.MatchViewHolder> {
     String LogTag = "MatchCardAdapter";
+    String LOGTAG = "MatchCardAdapter";
     List<GeneralMatch> matches;
 
     @Override
@@ -39,6 +40,7 @@ public class GeneralMatchAdapter extends RecyclerView.Adapter<GeneralMatchAdapte
         holder.player2.setText(match.getPlayerTwoString());
         holder.playerOneScore.setText(match.getPlayerOneScore());
         holder.playerTwoScore.setText(match.getPlayerTwoString());
+        Log.d(LOGTAG, holder.cardView.getCardElevation() + "");
     }
 
     @Override

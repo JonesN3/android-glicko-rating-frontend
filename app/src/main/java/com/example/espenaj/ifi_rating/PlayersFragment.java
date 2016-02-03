@@ -4,9 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.espenaj.ifi_rating.adapter.PlayerListAdapter;
 
 
 /**
@@ -16,6 +22,7 @@ import android.view.ViewGroup;
  * to handle interaction events.
  */
 public class PlayersFragment extends Fragment {
+    String LOGTAG = "PlayerFragmnent";
 
     private OnFragmentInteractionListener mListener;
 
@@ -28,12 +35,24 @@ public class PlayersFragment extends Fragment {
         return  playersFragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_players, container, false);
+        View view = inflater.inflate(R.layout.fragment_players, container, false);
+
+        Log.d(LOGTAG, "Players: " + MainActivity.PLAYERS);
+
+        Context context = view.getContext();
+        RecyclerView recyclerView = (RecyclerView) view;
+
+        GridLayoutManager glm = new GridLayoutManager(context, 2);
+        recyclerView.setLayoutManager(glm);
+
+        PlayerListAdapter adapter = new PlayerListAdapter(MainActivity.PLAYERS);
+        recyclerView.setAdapter(adapter);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
